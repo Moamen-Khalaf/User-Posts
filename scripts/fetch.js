@@ -2,29 +2,21 @@ const content = document.getElementById("content");
 const sidebar = document.getElementById("sidebar");
 
 async function fetchUsers() {
-  try {
-    const res = await fetch("https://jsonplaceholder.typicode.com/users");
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-    return await res.json();
-  } catch (error) {
-    console.error("Failed to fetch users:", error);
+  const res = await fetch("https://jsonplaceholder.typicode.com/users");
+  if (!res.ok) {
+    throw new Error(`HTTP error! Status: ${res.status}`);
   }
+  return await res.json();
 }
 
 async function fetchPosts(userId) {
-  try {
-    const res = await fetch(
-      `https://jsonplaceholder.typicode.com/posts?userId=${userId}`
-    );
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-    return await res.json();
-  } catch (error) {
-    console.error(`Failed to fetch posts for user ${userId}:`, error);
+  const res = await fetch(
+    `https://jsonplaceholder.typicode.com/posts?userId=${userId}`
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! Status: ${res.status}`);
   }
+  return await res.json();
 }
 
 function createSidebarItem(user) {
@@ -55,31 +47,31 @@ function createSidebarItem(user) {
 
 async function showPosts(userId) {
   const posts = await fetchPosts(userId);
-  if (posts) {
-    content.innerHTML = "";
-    posts.forEach((post) => {
-      const title = document.createElement("h3");
-      title.innerText = post.title;
+  content.innerHTML = "";
+  posts.forEach((post) => {
+    const title = document.createElement("h3");
+    title.innerText = post.title;
 
-      const contentBody = document.createElement("h4");
-      contentBody.innerText = post.body;
+    const contentBody = document.createElement("h4");
+    contentBody.innerText = post.body;
 
-      const container = document.createElement("div");
-      container.appendChild(title);
-      container.appendChild(document.createElement("hr"));
-      container.appendChild(contentBody);
+    const container = document.createElement("div");
+    container.appendChild(title);
+    container.appendChild(document.createElement("hr"));
+    container.appendChild(contentBody);
 
-      content.appendChild(container);
-    });
-  }
+    content.appendChild(container);
+  });
 }
 
 (async function init() {
-  const users = await fetchUsers();
-  if (users) {
+  try {
+    const users = await fetchUsers();
     users.forEach(createSidebarItem);
     if (users.length > 0) {
-      showPosts(users[0].id);
+      await showPosts(users[0].id);
     }
+  } catch (error) {
+    console.error("Initialization failed:", error);
   }
 })();
